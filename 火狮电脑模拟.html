@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows电脑</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+            transition: background-color 0s 10s; /* 设置背景色过渡效果，延迟10秒执行 */
+        }
+
+        body:before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://github.com/Xiaowameijiao/huoshiwindows.github.io/blob/main/windows-default-background-xqbaeakmm9cqei4j.jpg?raw=true');
+            background-size: cover;
+            opacity: 0;
+            transition: opacity 0s 10s; /* 设置透明度过渡效果，延迟10秒执行 */
+            z-index: -1;
+        }
+
+        /* 当10秒后，隐藏初始背景 */
+        body.loaded {
+            background-color: transparent;
+        }
+
+        /* 当10秒后，显示新背景 */
+        body.loaded:before {
+            opacity: 1;
+        }
+
+        .screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 3em;
+            opacity: 0;
+            transition: opacity 2s;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://github.com/Xiaowameijiao/huoshiwindows.github.io/blob/main/old-windows-1920-x-1200-background-sk9o7dg0kthg44dy.jpg?raw=true');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .new-background {
+            background-image: url('https://github.com/Xiaowameijiao/huoshiwindows.github.io/blob/main/windows-default-background-xqbaeakmm9cqei4j.jpg?raw=true');
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            opacity: 0;
+            transition: opacity 2s;
+        }
+
+        .login-container {
+            position: absolute;
+            top: calc(50% + 100px);
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .login-button {
+            background-image: url('https://github.com/Xiaowameijiao/huoshiwindows.github.io/blob/main/Captura%20de%20pantalla%202024-07-11%20174236.png?raw=true');
+            background-size: cover;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+            background-color: transparent; /* 确保背景颜色为透明 */
+        }
+
+        .login-button:hover {
+            opacity: 0.8;
+        }
+
+        .loading {
+            margin-top: 20px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .welcome {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            text-align: center;
+            color: white;
+            opacity: 0;
+            transition: opacity 2s;
+            z-index: 10; /* 确保欢迎消息在页面上方显示 */
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: white;
+        }
+
+        .login-error {
+            color: black;
+            margin-top: 10px;
+            font-size: 0.8em;
+        }
+
+
+        .transparent-background {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* 初始隐藏 */
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 5; /* 确保在其它元素之上 */
+        }
+
+        .time-container {
+            margin-right: 20px; /* 调整时间显示位置 */
+            font-size: 0.8em;
+            color: white;
+        }
+
+        .window-button {
+    background-image: url('https://github.com/Xiaowameijiao/huoshiwindows.github.io/blob/main/windows-vista-icon-png-14.png?raw=true');
+    background-size: contain;
+    width: 50px;
+    height: 50px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    position: absolute; /* 使用绝对定位 */
+    top: 0;
+    left: 0;
+    z-index: 10; /* 确保在其它元素之上 */
+}
+
+        /* 新增的图片按钮样式 */
+        .image-button {
+            background-size: contain;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+            position: absolute;
+            top: 10px; /* 调整按钮的垂直位置 */
+            left: 10px; /* 调整按钮的水平位置 */
+            display: none; /* 初始隐藏 */
+            z-index: 10; /* 确保在其它元素之上 */
+        }
+
+        /* 调整第二个按钮的位置 */
+        .second-image-button {
+            top: 70px; /* 调整第二个按钮的垂直位置 */
+        }
+
+        /* 窗口样式 */
+        .window {
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 60%;
+            height: 60%;
+            background-color: #333;
+            border: 2px solid #999;
+            z-index: 20; /* 确保在其它元素之上 */
+            display: none;
+            flex-direction: column;
+        }
+
+        .window.active {
+            display: flex;
+        }
+
+        /* 窗口标题栏样式 */
+        .window-header {
+            background-color: #222;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 窗口控制按钮样式 */
+        .window-controls {
+            display: flex;
+        }
+
+        .window-controls button {
+            width: 30px;
+            height: 30px;
+            margin-left: 5px;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: white;
+        }
+
+        .window-controls button:hover {
+            background-color: #555;
+        }
+
+        /* 窗口内容样式 */
+        .window-content {
+            padding: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 1.2em;
+            overflow: auto;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen" id="screen">
+        Windows  <h6 style="color: white;">火狮</h6>
+        <img src="https://github.com/Xiaowameijiao/huoshidiannaowindows.github.io/blob/main/00f2489a-b136-4679-92e6-efc46e4d115b.gif?raw=true" class="loading" id="loading">
+    </div>
+    <div class="background" id="background">
+        <img src="https://github.com/Xiaowameijiao/huoshiwindows.github.io/blob/main/Captura%20de%20pantalla%202024-07-11%20173302.png?raw=true" class="avatar" id="avatar">
+        <div class="login-container" id="loginContainer">
+            <input type="text" id="username" class="input-field" placeholder="用户名">
+            <input type="password" id="password" class="input-field" placeholder="密码">
+            <button id="loginBtn" class="login-button"></button>
+            <div id="loginError" class="login-error"></div> <!-- 新增的提示信息元素 -->
+        </div>
+    </div>
+    <div id="welcomeMessage" class="welcome"></div>
+
+    <!-- 新增的透明黑色区域和时间显示 -->
+    <div class="transparent-background" id="transparentBackground">
+        <div class="time-container" id="timeContainer"></div>
+        <button id="windowButton" class="window-button"></button>
+    </div>
+
+    <!-- 图片按钮容器 -->
+    <div id="imageButtonContainer">
+</div>
+
+    <!-- 窗口 -->
+    <div class="window" id="window">
+        <div class="window-header">
+            文件
+            <div class="window-controls">
+                <button id="minimizeBtn">-</button>
+                <button id="maximizeBtn">+</button>
+                <button id="closeBtn">x</button>
+            </div>
+        </div>
+        <div class="window-content" id="windowContent">
+            系统出现错误
+   <a href="https://xiaowameijiao.github.io/huoshiwindowssimulator2.github.io/windows%E6%A8%A1%E6%8B%9F2.html"> <img src="https://github.com/Xiaowameijiao/windowspng.github.io/blob/main/unnamed.png?raw=true" width="50" height="50"> </a>
+        </div>
+    </div>
+
+    <audio id="welcomeAudio">
+        <source src="https://xiaowameijiao.github.io/huoshiwindowsmp3.github.io/windows%E7%94%B5%E8%84%91%E5%BC%80%E6%9C%BA%E5%A3%B0%E9%9F%B3.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        window.onload = function() {
+            const screen = document.getElementById('screen');
+            const background = document.getElementById('background');
+            const avatar = document.getElementById('avatar');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginContainer = document.getElementById('loginContainer');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            const welcomeAudio = document.getElementById('welcomeAudio');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginError = document.getElementById('loginError'); // 提示信息元素
+            const timeContainer = document.getElementById('timeContainer');
+            const transparentBackground = document.getElementById('transparentBackground');
+            const imageButtonContainer = document.getElementById('imageButtonContainer');
+            const window = document.getElementById('window');
+            const windowContent = document.getElementById('windowContent');
+            const minimizeBtn = document.getElementById('minimizeBtn');
+            const maximizeBtn = document.getElementById('maximizeBtn');
+            const closeBtn = document.getElementById('closeBtn');
+
+            // 更新时间的函数
+            function updateTime() {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                timeContainer.textContent = `${hours}:${minutes}`;
+            }
+
+            // 每秒更新一次时间
+            setInterval(updateTime, 1000);
+
+            // 登录按钮点击事件
+            loginBtn.addEventListener('click', function() {
+                // 验证用户名和密码是否为空
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (username === '' || password === '') {
+                    loginError.textContent = '请输入用户名和密码！'; // 显示提示信息
+                    return;
+                }
+
+                // 清空提示信息
+                loginError.textContent = '';
+
+                // 删除登录界面所有内容
+                background.removeChild(avatar);
+                background.removeChild(loginContainer);
+
+                // 显示欢迎消息
+                welcomeMessage.innerHTML = '欢迎<br><span class="user-name">' + username + '</span>';
+                welcomeMessage.style.opacity = 1;
+
+                // 隐藏欢迎消息
+                setTimeout(() => {
+                    welcomeMessage.style.opacity = 0;
+                }, 6000);
+
+                // 更改背景图和播放音频
+                setTimeout(() => {
+                    background.classList.add('new-background');
+                    welcomeMessage.innerHTML = '';
+                    welcomeAudio.play();
+
+                    // 显示透明黑色区域和时间
+                    transparentBackground.style.display = 'flex';
+
+                    // 创建并添加图片按钮示例
+                    addImageButton('https://github.com/Xiaowameijiao/huoshiwindows.github.io/blob/main/Recycle-bin-windows-11-icon.png?raw=true');
+                    addImageButton('https://github.com/Xiaowameijiao/windowspng.github.io/blob/main/windowscomputerico.png?raw=true');
+
+                }, 8000);
+            });
+
+            // 显示Windows名字和加载动画
+            setTimeout(() => {
+                screen.style.opacity = 1;
+            }, 1000);
+
+            // 隐藏Windows名字和加载动画
+            setTimeout(() => {
+                screen.style.opacity = 0;
+            }, 6000);
+
+            // 显示背景图和头像
+            setTimeout(() => {
+                background.style.opacity = 1;
+                avatar.style.opacity = 1;
+            }, 8000);
+
+            // 函数：添加图片按钮
+            function addImageButton(imageSrc) {
+                const imageButton = document.createElement('button');
+                imageButton.className = 'image-button';
+                imageButton.style.backgroundImage = `url('${imageSrc}')`;
+                imageButtonContainer.appendChild(imageButton);
+
+                // 根据已添加的按钮数量来调整第二个按钮的位置
+                if (imageButtonContainer.children.length > 1) {
+                    const secondButton = imageButtonContainer.children[1];
+                    secondButton.classList.add('second-image-button');
+                }
+
+                imageButton.style.display = 'block'; // 显示图片按钮
+
+                // 点击图片按钮显示窗口
+                imageButton.addEventListener('click', function() {
+                    openWindow();
+                });
+            }
+
+            // 函数：打开窗口
+            function openWindow() {
+                window.style.display = 'flex'; // 显示窗口
+            }
+
+            // 窗口控制按钮点击事件
+            minimizeBtn.addEventListener('click', function() {
+                // 最小化窗口（假设实现）
+                window.style.display = 'none';
+            });
+
+            maximizeBtn.addEventListener('click', function() {
+                // 最大化或恢复窗口大小（假设实现）
+                // 这里可以根据需要进行窗口最大化或恢复的逻辑处理
+            });
+
+            closeBtn.addEventListener('click', function() {
+                // 关闭窗口
+                window.style.display = 'none';
+            });
+        };
+    </script>
+
+<script>
+        // 禁用右键菜单
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+
+        // 禁用文本选择
+        document.addEventListener('selectstart', function(event) {
+            event.preventDefault();
+        });
+
+        // 禁用复制
+        document.addEventListener('copy', function(event) {
+            event.preventDefault();
+        });
+
+        // 禁用开发者工具快捷键
+        document.addEventListener('keydown', function(event) {
+            // 禁用 F12
+            if (event.key === 'F12') {
+                event.preventDefault();
+            }
+            // 禁用 Ctrl+Shift+I
+            if (event.ctrlKey && event.shiftKey && event.key === 'I') {
+                event.preventDefault();
+            }
+            // 禁用 Ctrl+Shift+J (打开控制台)
+            if (event.ctrlKey && event.shiftKey && event.key === 'J') {
+                event.preventDefault();
+            }
+            // 禁用 Ctrl+U (查看源代码)
+            if (event.ctrlKey && event.key === 'U') {
+                event.preventDefault();
+            }
+        });
+    </script>
+
+</body>
+</html>
+
