@@ -254,22 +254,6 @@
             overflow: auto;
             flex-grow: 1;
         }
-#fullscreen-btn {
-    position: fixed;
-    right: 50px; /* 修改为右下角 */
-    bottom: 10px;
-    padding: 10px 20px;
-    background-color: #00000027;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1000;
-}
-
-#fullscreen-btn:focus {
-    outline: none;
-}
     </style>
 </head>
 <body>
@@ -318,7 +302,6 @@
         <source src="https://xiaowameijiao.github.io/huoshiwindowsmp3.github.io/windows%E7%94%B5%E8%84%91%E5%BC%80%E6%9C%BA%E5%A3%B0%E9%9F%B3.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-    <button id="fullscreen-btn">全屏模式</button>
     <script>
         window.onload = function() {
             const screen = document.getElementById('screen');
@@ -491,36 +474,5 @@
         });
     </script>
 
-<script>
-document.getElementById('fullscreen-btn').addEventListener('click', function() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen()
-            .then(() => {
-                document.getElementById('fullscreen-btn').style.display = 'none';
-            })
-            .catch((err) => {
-                console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen()
-                .then(() => {
-                    document.getElementById('fullscreen-btn').style.display = 'block';
-                })
-                .catch((err) => {
-                    console.log(`Error attempting to exit full-screen mode: ${err.message} (${err.name})`);
-                });
-        }
-    }
-});
-
-document.addEventListener('fullscreenchange', (event) => {
-    if (!document.fullscreenElement) {
-        document.getElementById('fullscreen-btn').style.display = 'block';
-    }
-});
-
-</script>
 </body>
 </html>
-
